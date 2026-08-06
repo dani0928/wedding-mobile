@@ -406,8 +406,7 @@ function showToast(msg) {
       showToast('이름과 파일을 선택해주세요.');
       return;
     }
-    const fileType = file.type.startsWith('video') ? 'video' : 'image';
-    const ext = file.name.split('.').pop() || (fileType === 'video' ? 'mp4' : 'jpg');
+    const ext = file.name.split('.').pop() || 'jpg';
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
     submitBtn.disabled = true;
@@ -421,7 +420,7 @@ function showToast(msg) {
       author,
       caption: caption || null,
       file_path: path,
-      file_type: fileType,
+      file_type: 'image',
     });
     submitBtn.disabled = false;
 
