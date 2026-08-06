@@ -13,14 +13,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=25" />
+<link rel="stylesheet" href="styles.css?v=28" />
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js" integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-heart">✦</div>
-  <p class="loading-names">박진혁 · 서하늘</p>
-  <div class="loading-hearts"><span></span><span></span><span></span></div>
+  <p class="loading-typewriter"><span id="loadingTypewriterText"></span><span class="loading-caret"></span></p>
 </div>
 <audio id="bgm" src="bgm.m4a" loop preload="auto"></audio>
 <button class="music-toggle" id="musicToggle" aria-label="배경음악 재생/정지">
@@ -49,7 +47,7 @@
     </div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 2. 초대장 카드 -->
   <section class="section invitation">
@@ -70,7 +68,7 @@
     </div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 4. 포토 갤러리 -->
   <section class="section gallery">
@@ -97,7 +95,7 @@
     </div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 5. 날짜 & 카운트다운 -->
   <section class="section countdown">
@@ -114,7 +112,7 @@
     <p class="placeholder-note">2026년 10월 10일 오후 5시 50분</p>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 6. 오시는 길 -->
   <section class="section location">
@@ -190,7 +188,7 @@
     </div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 7. 축의금 계좌 -->
   <section class="section gift">
@@ -249,7 +247,7 @@
     </div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 9. RSVP -->
   <section class="section rsvp">
@@ -259,7 +257,7 @@
     <button class="btn-primary" id="openRsvpModal">참석 의사 전달하기</button>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 9-1. 게스트스냅 -->
   <section class="section guest-snap">
@@ -292,7 +290,7 @@
     <div class="guest-snap-grid" id="guestSnapGrid"></div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 10. 방명록 -->
   <section class="section guestbook">
@@ -306,7 +304,7 @@
     <div class="masonry" id="guestbookList"></div>
   </section>
 
-  <div class="divider"><span>✦</span></div>
+  <div class="divider"></div>
 
   <!-- 11. 푸터 -->
   <footer class="section footer">
@@ -376,7 +374,8 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js"></script>
 <script src="config.js?v=7"></script>
-<script src="script.js?v=19"></script>
+<script src="script.js?v=20"></script>
 </body>
 </html>

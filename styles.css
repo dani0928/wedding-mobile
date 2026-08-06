@@ -81,12 +81,17 @@ body {
 .star { color: var(--accent-deep); font-size: 1rem; margin: 4px 0; }
 
 .divider {
-  text-align: center;
+  display: flex;
+  justify-content: center;
   padding: 6px 0;
-  color: var(--accent-deep);
   max-width: 480px;
   margin: 0 auto;
-  font-size: 0.85rem;
+}
+.divider::before {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: var(--border-soft);
 }
 
 /* Hero */
@@ -645,38 +650,28 @@ body {
   visibility: hidden;
   pointer-events: none;
 }
-.loading-heart {
-  color: var(--accent-deep);
-  font-size: 1.4rem;
-  animation: loadingPulse 1.4s ease-in-out infinite;
-}
-.loading-names {
+.loading-typewriter {
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--ink);
   margin: 0;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  min-height: 1.4em;
 }
-.loading-hearts { display: flex; gap: 8px; }
-.loading-hearts span {
-  width: 10px;
-  height: 9px;
-  background-image: var(--heart-solid);
-  background-repeat: no-repeat;
-  background-size: contain;
-  animation: loadingHeartBeat 1.2s ease-in-out infinite;
+.loading-typewriter .tw-heart { color: var(--pink-dot); }
+.loading-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--accent-deep);
+  vertical-align: -0.15em;
+  animation: caretBlink 0.9s steps(1) infinite;
 }
-.loading-hearts span:nth-child(1) { animation-delay: 0s; }
-.loading-hearts span:nth-child(2) { animation-delay: 0.15s; }
-.loading-hearts span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes loadingPulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.25); opacity: 1; }
-}
-@keyframes loadingHeartBeat {
-  0%, 60%, 100% { transform: scale(0.7); opacity: 0.4; }
-  30% { transform: scale(1.15); opacity: 1; }
+@keyframes caretBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 /* Music toggle */

@@ -42,10 +42,41 @@
   document.head.appendChild(script);
 })();
 
-// ---- Loading screen ----
+// ---- Loading screen: typewriter intro + confetti ----
 (function setupLoadingScreen() {
   const screen = document.getElementById('loadingScreen');
-  const minShownAt = Date.now() + 700;
+  const textEl = document.getElementById('loadingTypewriterText');
+  const fullText = '진혁 ♥ 하늘 결혼식에 초대합니다';
+  const charDelay = 80;
+  const startDelay = 400;
+
+  function fireConfetti() {
+    if (typeof confetti !== 'function') return;
+    const count = 200;
+    const defaults = { origin: { y: 0.7 }, zIndex: 300 };
+    function fire(ratio, opts) {
+      confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * ratio) }));
+    }
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+  }
+
+  function typeNext(i) {
+    if (i > fullText.length) {
+      fireConfetti();
+      return;
+    }
+    const slice = fullText.slice(0, i);
+    textEl.innerHTML = slice.replace('♥', '<span class="tw-heart">♥</span>');
+    setTimeout(() => typeNext(i + 1), charDelay);
+  }
+  setTimeout(() => typeNext(0), startDelay);
+
+  // 타이핑 + 컨페티 연출이 끝날 때까지는 최소한 보여준다
+  const minShownAt = Date.now() + startDelay + fullText.length * charDelay + 2500;
   function hide() {
     const wait = Math.max(0, minShownAt - Date.now());
     setTimeout(() => screen.classList.add('hidden'), wait);
@@ -56,7 +87,7 @@
     window.addEventListener('load', hide);
   }
   // 이미지가 많아 load 이벤트가 오래 걸릴 경우를 대비한 안전장치
-  setTimeout(hide, 4000);
+  setTimeout(hide, 6000);
 })();
 
 // ---- Background music ----
