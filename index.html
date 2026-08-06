@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>박진혁 · 서하늘 모바일 청첩장</title>
+<meta name="description" content="박진혁 · 서하늘의 결혼식에 초대합니다" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="박진혁 🖤 서하늘 결혼식에 초대합니다" />
+<meta property="og:description" content="2026년 10월 10일 토요일 오후 5시 50분" />
+<meta property="og:image" content="https://mobile-wedding-invitation-silk.vercel.app/IMG_1308.jpeg" />
+<meta property="og:url" content="https://mobile-wedding-invitation-silk.vercel.app/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css?v=22" />
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js" integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-heart">✦</div>
+  <p class="loading-names">박진혁 · 서하늘</p>
+  <div class="loading-spinner"></div>
+</div>
+<audio id="bgm" src="bgm.m4a" loop preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" aria-label="배경음악 재생/정지">
+  <span class="music-icon music-icon-note">♪</span>
+  <span class="music-bars"><span></span><span></span><span></span></span>
+</button>
+<button class="kakao-float" id="kakaoShareBtn" aria-label="카카오톡으로 공유하기">
+  <svg class="kakao-float-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 3.5C6.75 3.5 2.5 6.9 2.5 11.1c0 2.68 1.75 5.04 4.4 6.4-.19.7-.69 2.53-.79 2.92-.12.48.18.48.37.35.15-.1 2.4-1.63 3.38-2.3.67.1 1.37.14 2.14.14 5.25 0 9.5-3.4 9.5-7.6S17.25 3.5 12 3.5z" fill="#391B1B"/>
+  </svg>
+</button>
+<div class="frame">
+
+  <!-- 1. 히어로 -->
+  <section class="section hero">
+    <img class="hero-media" id="heroImg" src="hero.jpg" onerror="this.onerror=null;this.src='A3_00987.jpg';" alt="박진혁 · 서하늘" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="eyebrow">WE ARE GETTING MARRIED</p>
+      <div class="star">✦</div>
+      <h1 class="names">박진혁 · 서하늘</h1>
+    </div>
+    <div class="scroll-indicator">
+      <span>SCROLL</span>
+      <div class="bounce">⌄</div>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 2. 초대장 카드 -->
+  <section class="section invitation">
+    <p class="eyebrow">INVITATION</p>
+    <div class="star">✦</div>
+    <div class="invitation-card">
+      <p class="parents-line">박창희 · 박선희의 장남 <strong>박진혁</strong></p>
+      <p class="parents-line">이혜영의 장녀 <strong>서하늘</strong></p>
+      <p class="invitation-text">
+        오랜 시간 걸음 지키며<br/>
+        서로의 하루가 되어주었습니다.<br/><br/>
+        이제 부부라는 이름으로<br/>
+        같은 방향을 걸어가려 합니다.<br/><br/>
+        이 뜻깊은 시작의 자리에<br/>
+        소중한 분들을 정중히 초대합니다.
+      </p>
+      <p class="signature">박진혁 · 서하늘 드림</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 4. 포토 갤러리 -->
+  <section class="section gallery">
+    <p class="eyebrow">GALLERY</p>
+    <h2 class="section-title">우리의 순간</h2>
+    <p class="hint">사진을 눌러 크게 보세요</p>
+    <div class="gallery-grid" id="galleryCarousel">
+      <div class="gallery-tile"><img src="A3_01974.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_02531.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_02859.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_02418.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_02507.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_03447.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_04360.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_04478.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="A3_04855.jpg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1306.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1307.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1308.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1309.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1310.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1311.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><img src="IMG_1312.jpeg" alt="" loading="lazy" /></div>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 5. 날짜 & 카운트다운 -->
+  <section class="section countdown">
+    <p class="eyebrow">COUNTDOWN</p>
+    <h2 class="section-title">예식까지</h2>
+    <div class="calendar" id="calendar"></div>
+    <div class="countdown-numbers" id="countdownNumbers">
+      <div class="cd-box"><span id="cdDays">--</span><small>DAYS</small></div>
+      <div class="cd-box"><span id="cdHours">--</span><small>HOUR</small></div>
+      <div class="cd-box"><span id="cdMinutes">--</span><small>MIN</small></div>
+      <div class="cd-box"><span id="cdSeconds">--</span><small>SEC</small></div>
+    </div>
+    <p class="countdown-line" id="countdownLine">박진혁 🖤 서하늘의 결혼식이 <strong id="cdDaysInline">--</strong>일 남았습니다</p>
+    <p class="placeholder-note">2026년 10월 10일 오후 5시 50분</p>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 6. 오시는 길 -->
+  <section class="section location">
+    <p class="eyebrow">LOCATION</p>
+    <h2 class="section-title">오시는 길</h2>
+    <div class="map-embed" id="naverMap" role="img" aria-label="경기교총웨딩하우스 위치 지도"></div>
+    <div class="map-links">
+      <a class="nav-icon-btn" id="tmapLink" href="tmap://route?goalname=%EA%B2%BD%EA%B8%B0%EA%B5%90%EC%B4%9D%EC%9B%A8%EB%94%A9%ED%95%98%EC%9A%B0%EC%8A%A4&goalx=127.0074805&goaly=37.2767512" aria-label="티맵으로 길찾기">
+        <img class="nav-icon-img" src="icon-tmap.png" alt="" />
+        <span class="nav-icon-label">티맵</span>
+      </a>
+      <a class="nav-icon-btn" href="https://map.naver.com/p/entry/place/13536000?placePath=%2Fhome%3Ffrom%3Dmap%26fromPanelNum%3D1%26additionalHeight%3D76%26timestamp%3D202607271322%26locale%3Dko%26svcName%3Dmap_pcv5&c=15.00,0,0,0,dh" target="_blank" rel="noopener" aria-label="네이버지도로 길찾기">
+        <img class="nav-icon-img" src="icon-naver.png" alt="" />
+        <span class="nav-icon-label">네이버지도</span>
+      </a>
+      <a class="nav-icon-btn" href="https://map.kakao.com/?q=%EA%B2%BD%EA%B8%B0%EA%B5%90%EC%B4%9D%EC%9B%A8%EB%94%A9%ED%95%98%EC%9A%B0%EC%8A%A4" target="_blank" rel="noopener" aria-label="카카오내비로 길찾기">
+        <img class="nav-icon-img" src="icon-kakao.png" alt="" />
+        <span class="nav-icon-label">카카오내비</span>
+      </a>
+    </div>
+    <div class="transport-info">
+      <div class="info-row">
+        <strong><span class="info-icon">🚇</span>지하철</strong>
+        <div class="transit-line-row">
+          <img class="line-badge" src="line-1.svg" alt="1호선" />
+          <img class="line-badge" src="line-suin-bundang.svg" alt="수인분당선" />
+          <span class="bus-detail">수원역 지하상가 13번 출구 (셔틀버스 수시 운행)</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <strong><span class="info-icon">🚌</span>버스</strong>
+        <div class="bus-type-row">
+          <span class="bus-type-label bus-type-general">일반버스</span>
+          <div class="bus-num-list">
+            <span class="bus-num bus-num-general">3</span>
+            <span class="bus-num bus-num-general">5</span>
+            <span class="bus-num bus-num-general">7-1</span>
+            <span class="bus-num bus-num-general">7-1A</span>
+            <span class="bus-num bus-num-general">7-2</span>
+            <span class="bus-num bus-num-general">60</span>
+            <span class="bus-num bus-num-general">66</span>
+            <span class="bus-num bus-num-general">66-4</span>
+            <span class="bus-num bus-num-general">82-1</span>
+            <span class="bus-num bus-num-general">83-1</span>
+            <span class="bus-num bus-num-general">301</span>
+            <span class="bus-num bus-num-general">310</span>
+            <span class="bus-num bus-num-general">400A</span>
+            <span class="bus-num bus-num-general">700-2</span>
+            <span class="bus-num bus-num-general">777</span>
+            <span class="bus-num bus-num-general">900</span>
+          </div>
+          <span class="bus-stop-note">병무청입구 하차</span>
+        </div>
+        <div class="bus-type-row">
+          <span class="bus-type-label bus-type-express">직행좌석버스</span>
+          <div class="bus-num-list">
+            <span class="bus-num bus-num-express">1007</span>
+            <span class="bus-num bus-num-express">2007</span>
+            <span class="bus-num bus-num-express">7770</span>
+            <span class="bus-num bus-num-express">8401</span>
+            <span class="bus-num bus-num-express">8409</span>
+          </div>
+          <span class="bus-stop-note">병무청입구 하차</span>
+        </div>
+        <div class="bus-type-row">
+          <span class="bus-type-label bus-type-village">마을버스</span>
+          <div class="bus-num-list">
+            <span class="bus-num bus-num-village">27-3</span>
+          </div>
+          <span class="bus-stop-note">병무청 사거리 하차</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 7. 축의금 계좌 -->
+  <section class="section gift">
+    <p class="eyebrow">GIFT</p>
+    <h2 class="section-title">마음 전하실 곳</h2>
+    <p class="hint">참석이 어려우신 분들을 위해 계좌번호를 안내드립니다.</p>
+    <div class="accordion">
+      <button class="accordion-header">신랑측 <span class="accordion-chevron">⌄</span></button>
+      <div class="accordion-body accordion-body-list">
+        <div class="account-entry">
+          <p class="account-name">신랑 박진혁</p>
+          <div class="account-row">
+            <div class="account-detail">
+              <span class="account-number">584102-01-76786</span>
+              <span class="bank-info"><img class="bank-badge-img bank-badge-kb" src="icon-kb.png" alt="" />국민은행 박진혁</span>
+            </div>
+            <div class="account-actions">
+              <button class="btn-copy" data-copy="584102-01-76786">복사</button>
+              <a class="btn-kpay" href="https://qr.kakaopay.com/Ej9R3Wwdq" target="_blank" rel="noopener" aria-label="카카오페이로 송금하기">
+                <img class="kpay-icon" src="kpay.svg" alt="" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-header">신부측 <span class="accordion-chevron">⌄</span></button>
+      <div class="accordion-body accordion-body-list">
+        <div class="account-entry">
+          <p class="account-name">신부 서하늘</p>
+          <div class="account-row">
+            <div class="account-detail">
+              <span class="account-number">21700204625243</span>
+              <span class="bank-info"><img class="bank-badge-img bank-badge-kb" src="icon-kb.png" alt="" />국민은행 서하늘</span>
+            </div>
+            <button class="btn-copy" data-copy="21700204625243">복사</button>
+          </div>
+        </div>
+        <div class="account-entry">
+          <p class="account-name">신부 어머니 이혜영</p>
+          <div class="account-row">
+            <div class="account-detail">
+              <span class="account-number">3521142749783</span>
+              <span class="bank-info"><img class="bank-badge-img" src="icon-nh.png" alt="" />농협은행 이혜영</span>
+            </div>
+            <button class="btn-copy" data-copy="3521142749783">복사</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 9. RSVP -->
+  <section class="section rsvp">
+    <p class="eyebrow">R.S.V.P</p>
+    <h2 class="section-title">참석 의사 전달</h2>
+    <p class="hint">축하의 마음으로 참석해 주시는 모든 분들께 정성을 다해 모시고자 합니다.</p>
+    <button class="btn-primary" id="openRsvpModal">참석 의사 전달하기</button>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 9-1. 게스트스냅 -->
+  <section class="section guest-snap">
+    <p class="eyebrow">GUEST SNAP</p>
+    <h2 class="section-title">게스트 스냅</h2>
+    <p class="hint">신랑신부의 행복한 순간을 함께 담아주세요.<br/>예식 당일부터 사진과 영상을 올리실 수 있습니다.</p>
+
+    <div class="mission-card">
+      <p class="mission-title">📸 이 순간을 놓치지 마세요</p>
+      <ul class="mission-list">
+        <li>신부 대기실의 설레는 순간</li>
+        <li>환하게 웃는 신랑신부</li>
+        <li>서로를 마주보는 눈빛</li>
+        <li>신랑 · 신부의 입장 모습</li>
+        <li>하객분들의 즐거운 표정</li>
+        <li>가족·친구들과 함께한 순간</li>
+      </ul>
+      <p class="placeholder-note">PLACEHOLDER: 우수 사진 선정 경품 안내 (예: 소정의 선물 증정) 확정 시 안내드립니다</p>
+    </div>
+
+    <div class="guest-snap-upload" id="guestSnapUpload">
+      <input type="text" id="snapAuthor" placeholder="이름" maxlength="20" />
+      <input type="text" id="snapCaption" placeholder="한마디 남겨주세요 (선택)" maxlength="80" />
+      <label class="btn-outline guest-snap-file-label" for="snapFile">사진 · 영상 선택</label>
+      <input type="file" id="snapFile" accept="image/*,video/*" hidden />
+      <span class="guest-snap-filename" id="snapFileName"></span>
+      <button class="btn-primary full" id="snapSubmit">업로드하기</button>
+    </div>
+
+    <div class="guest-snap-grid" id="guestSnapGrid"></div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 10. 방명록 -->
+  <section class="section guestbook">
+    <p class="eyebrow">GUESTBOOK</p>
+    <h2 class="section-title">축하 메시지</h2>
+    <div class="guestbook-form" id="guestbookForm">
+      <input type="text" id="gbAuthor" placeholder="이름" maxlength="20" />
+      <textarea id="gbContent" placeholder="따뜻한 메시지를 남겨주세요" maxlength="200"></textarea>
+      <button class="btn-primary" id="gbSubmit">등록</button>
+    </div>
+    <div class="masonry" id="guestbookList"></div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- 11. 푸터 -->
+  <footer class="section footer">
+    <p class="footer-names">박진혁 · 서하늘</p>
+    <p class="footer-date">2026년 10월 10일 토요일 오후 5시 50분 · 경기교총웨딩하우스</p>
+  </footer>
+
+</div>
+
+<!-- RSVP 모달 -->
+<div class="modal-overlay" id="rsvpModal" hidden>
+  <div class="modal-sheet">
+    <button class="modal-close" data-close="rsvpModal">×</button>
+    <h3 class="modal-title">참석 의사 전달</h3>
+    <form id="rsvpForm">
+      <div class="field-group">
+        <label>구분</label>
+        <div class="toggle-group" id="rsvpSide">
+          <button type="button" class="toggle-btn" data-value="신랑측">신랑측</button>
+          <button type="button" class="toggle-btn" data-value="신부측">신부측</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="rsvpName">성함</label>
+        <input type="text" id="rsvpName" placeholder="성함을 입력해주세요" required />
+      </div>
+      <div class="field-group">
+        <label>참석 여부</label>
+        <div class="toggle-group" id="rsvpAttendance">
+          <button type="button" class="toggle-btn" data-value="참석">참석</button>
+          <button type="button" class="toggle-btn" data-value="불참석">불참석</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="rsvpCount">참석인원</label>
+        <input type="number" id="rsvpCount" min="1" placeholder="본인 포함 총 참석인원" />
+      </div>
+      <div class="field-group">
+        <label for="rsvpCompanion">동행인</label>
+        <input type="text" id="rsvpCompanion" placeholder="함께 오시는 분 성함" />
+      </div>
+      <div class="field-group">
+        <label>식사 여부</label>
+        <div class="toggle-group" id="rsvpMeal">
+          <button type="button" class="toggle-btn" data-value="예정">예정</button>
+          <button type="button" class="toggle-btn" data-value="안함">안함</button>
+          <button type="button" class="toggle-btn" data-value="미정">미정</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary full">참석 의사 전달하기</button>
+      <label class="checkbox-line">
+        <input type="checkbox" id="rsvpDontShowToday" />
+        오늘 하루 보지 않기
+      </label>
+    </form>
+  </div>
+</div>
+
+<!-- 갤러리 라이트박스 -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox-close" id="lightboxClose">×</button>
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="이전 사진">‹</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="다음 사진">›</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js?v=7"></script>
+<script src="script.js?v=18"></script>
+</body>
+</html>
