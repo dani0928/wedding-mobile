@@ -16,6 +16,7 @@
   --font-sans: "Noto Sans KR", -apple-system, system-ui, sans-serif;
   --font-serif: "Gowun Batang", serif;
   --heart-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='92' viewBox='0 0 100 92'%3E%3Cg transform='translate(18,17)'%3E%3Cpath d='M32 50s-22-13.5-22-27.5C10 14 15.5 8 23 8c4.5 0 8.5 2.5 9 6.5C32.5 10.5 36.5 8 41 8c7.5 0 13 6 13 14.5C54 36.5 32 50 32 50z' fill='%23f3c9d4' fill-opacity='0.32'/%3E%3C/g%3E%3C/svg%3E");
+  --heart-solid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 29'%3E%3Cpath d='M16 27S2 17.8 2 9.5C2 4.8 5.6 2 9.5 2c2.6 0 5 1.4 6.5 4 1.5-2.6 3.9-4 6.5-4C26.4 2 30 4.8 30 9.5 30 17.8 16 27 16 27z' fill='%235fa8cc'/%3E%3C/svg%3E");
 }
 
 * { box-sizing: border-box; }
@@ -41,7 +42,7 @@ body {
   background-color: var(--ivory);
   background-image: var(--heart-pattern);
   background-size: 76px 70px;
-  background-position: 0 0;
+  background-position: center top;
   background-repeat: repeat;
   opacity: 1;
   box-shadow: var(--shadow-frame);
@@ -260,7 +261,7 @@ body {
 .calendar-grid .dow { color: var(--ink-soft); font-weight: 600; padding: 4px 0; }
 .calendar-grid .day { padding: 6px 0; border-radius: 50%; }
 .calendar-grid .day.highlight {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 29'%3E%3Cpath d='M16 27S2 17.8 2 9.5C2 4.8 5.6 2 9.5 2c2.6 0 5 1.4 6.5 4 1.5-2.6 3.9-4 6.5-4C26.4 2 30 4.8 30 9.5 30 17.8 16 27 16 27z' fill='%235fa8cc'/%3E%3C/svg%3E");
+  background-image: var(--heart-solid);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 22px;
@@ -657,20 +658,25 @@ body {
   margin: 0;
   letter-spacing: 0.04em;
 }
-.loading-spinner {
-  width: 26px;
-  height: 26px;
-  border: 2.5px solid var(--accent-soft);
-  border-top-color: var(--accent-deep);
-  border-radius: 50%;
-  animation: loadingSpin 0.8s linear infinite;
+.loading-hearts { display: flex; gap: 8px; }
+.loading-hearts span {
+  width: 10px;
+  height: 9px;
+  background-image: var(--heart-solid);
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: loadingHeartBeat 1.2s ease-in-out infinite;
 }
+.loading-hearts span:nth-child(1) { animation-delay: 0s; }
+.loading-hearts span:nth-child(2) { animation-delay: 0.15s; }
+.loading-hearts span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes loadingPulse {
   0%, 100% { transform: scale(1); opacity: 0.7; }
   50% { transform: scale(1.25); opacity: 1; }
 }
-@keyframes loadingSpin {
-  to { transform: rotate(360deg); }
+@keyframes loadingHeartBeat {
+  0%, 60%, 100% { transform: scale(0.7); opacity: 0.4; }
+  30% { transform: scale(1.15); opacity: 1; }
 }
 
 /* Music toggle */
