@@ -208,6 +208,7 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
+  min-width: 60px;
 }
 .btn-copy:hover { background: var(--accent); color: #fff; }
 
@@ -407,6 +408,8 @@ body {
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.1s;
+  min-width: 60px;
+  box-sizing: border-box;
 }
 .btn-kpay:active { transform: scale(0.97); }
 .kpay-icon { height: 14px; width: auto; display: block; }
