@@ -1,6 +1,12 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "mobile-wedding-invitation-silk.vercel.app" }],
+      "destination": "https://weddingday.danielsky.vercel.app/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "mobile-wedding-invitation-silk.vercel.app" }],
       "destination": "https://weddingday.danielsky.vercel.app/:path*",
