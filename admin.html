@@ -92,6 +92,46 @@
     transition: opacity 0.2s, transform 0.2s; z-index: 50; white-space: nowrap;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 22px; border-bottom: 1px solid var(--border-soft); }
+  .tab-btn {
+    background: none; border: none; padding: 10px 4px; font-size: 0.85rem; font-weight: 600;
+    color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab-btn.active { color: var(--accent-deep); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .field-group { margin-bottom: 16px; }
+  .field-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field-group input[type="text"], .field-group textarea, .field-group select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-soft); border-radius: 8px;
+    font-size: 0.88rem; font-family: inherit; color: var(--ink); background: #fff;
+  }
+  .field-group input:focus, .field-group textarea:focus, .field-group select:focus { outline: none; border-color: var(--accent); }
+  .field-group textarea { min-height: 90px; resize: vertical; }
+  .save-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--accent);
+    color: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 6px;
+  }
+  .save-btn:active { transform: scale(0.98); }
+
+  .account-side-label { font-size: 0.85rem; font-weight: 700; margin: 22px 0 10px; color: var(--ink); }
+  .account-side-label:first-of-type { margin-top: 0; }
+  .account-card {
+    background: #fff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .account-card .field-group { margin-bottom: 10px; }
+  .account-card-row { display: flex; gap: 8px; }
+  .account-card-row .field-group { flex: 1; }
+  .account-card-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .account-card-actions button { flex: 1; padding: 9px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-soft); background: #fff; }
+  .account-card-actions .save-account-btn { color: var(--accent-deep); border-color: var(--accent); }
+  .account-card-actions .delete-account-btn { color: var(--danger); border-color: #f1c9c5; }
+  .add-account-btn {
+    width: 100%; padding: 10px; border: 1.5px dashed var(--border-soft); border-radius: 10px;
+    background: none; color: var(--ink-soft); font-size: 0.82rem; cursor: pointer; margin-bottom: 24px;
+  }
 </style>
 </head>
 <body>
@@ -107,21 +147,79 @@
   <div class="wrap">
     <div class="toolbar">
       <div>
-        <h1>사진 관리</h1>
-        <p class="sub">업로드 · 삭제 · 순서변경 · 대표사진 지정이 사이트에 바로 반영됩니다</p>
+        <h1>청첩장 관리</h1>
+        <p class="sub">여기서 바꾸면 사이트에 바로 반영됩니다</p>
       </div>
       <button class="lock-btn" id="lockBtn">잠그기</button>
     </div>
 
-    <div class="upload-box" id="uploadBox">
-      <p>사진을 여기로 끌어놓거나 선택해서 업로드하세요</p>
-      <label class="upload-btn" for="fileInput">사진 선택</label>
-      <input type="file" id="fileInput" accept="image/*" multiple />
-      <p id="uploadStatus"></p>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="photos">사진</button>
+      <button class="tab-btn" data-tab="content">문구</button>
+      <button class="tab-btn" data-tab="accounts">계좌</button>
     </div>
 
-    <p class="section-label">현재 사진 (⭐ = 대표사진)</p>
-    <div class="photo-list" id="photoList"></div>
+    <div class="tab-panel active" id="tab-photos">
+      <div class="upload-box" id="uploadBox">
+        <p>사진을 여기로 끌어놓거나 선택해서 업로드하세요</p>
+        <label class="upload-btn" for="fileInput">사진 선택</label>
+        <input type="file" id="fileInput" accept="image/*" multiple />
+        <p id="uploadStatus"></p>
+      </div>
+
+      <p class="section-label">현재 사진 (⭐ = 대표사진)</p>
+      <div class="photo-list" id="photoList"></div>
+    </div>
+
+    <div class="tab-panel" id="tab-content">
+      <div class="field-group">
+        <label for="cf-groom_name">신랑 이름</label>
+        <input type="text" id="cf-groom_name" />
+      </div>
+      <div class="field-group">
+        <label for="cf-bride_name">신부 이름</label>
+        <input type="text" id="cf-bride_name" />
+      </div>
+      <div class="field-group">
+        <label for="cf-groom_parents">신랑측 혼주 표기 (이름 앞부분)</label>
+        <input type="text" id="cf-groom_parents" placeholder="예: 박창희 · 박선희의 장남" />
+      </div>
+      <div class="field-group">
+        <label for="cf-bride_parents">신부측 혼주 표기 (이름 앞부분)</label>
+        <input type="text" id="cf-bride_parents" placeholder="예: 이혜영의 장녀" />
+      </div>
+      <div class="field-group">
+        <label for="cf-invitation_message">초대 인사말</label>
+        <textarea id="cf-invitation_message"></textarea>
+      </div>
+      <div class="field-group">
+        <label for="cf-invitation_signature">서명 문구</label>
+        <input type="text" id="cf-invitation_signature" />
+      </div>
+      <div class="field-group">
+        <label for="cf-wedding_datetime_text">예식 일시 문구</label>
+        <input type="text" id="cf-wedding_datetime_text" placeholder="예: 2026년 10월 10일 토요일 오후 5시 50분" />
+      </div>
+      <div class="field-group">
+        <label for="cf-venue_name">예식장 이름</label>
+        <input type="text" id="cf-venue_name" />
+      </div>
+      <div class="field-group">
+        <label for="cf-guest_snap_prize_note">게스트스냅 경품 안내 문구</label>
+        <textarea id="cf-guest_snap_prize_note"></textarea>
+      </div>
+      <button class="save-btn" id="saveContentBtn">문구 저장</button>
+    </div>
+
+    <div class="tab-panel" id="tab-accounts">
+      <p class="account-side-label">신랑측 계좌</p>
+      <div id="groomAccountList"></div>
+      <button class="add-account-btn" data-side="groom">+ 신랑측 계좌 추가</button>
+
+      <p class="account-side-label">신부측 계좌</p>
+      <div id="brideAccountList"></div>
+      <button class="add-account-btn" data-side="bride">+ 신부측 계좌 추가</button>
+    </div>
   </div>
 </div>
 

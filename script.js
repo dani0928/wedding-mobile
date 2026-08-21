@@ -254,6 +254,76 @@ bindLightboxGroup('#galleryCarousel');
   bindLightboxGroup('#galleryCarousel');
 })();
 
+// ---- Site text content (Supabase-backed, managed via admin.html) ----
+(async function loadSiteContent() {
+  const { data, error } = await sb.from('site_content').select('key, value');
+  if (error || !data) return;
+  const content = Object.fromEntries(data.map((row) => [row.key, row.value]));
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el && value != null) el.textContent = value;
+  };
+
+  setText('heroNames', content.groom_name && content.bride_name ? `${content.groom_name} · ${content.bride_name}` : null);
+  setText('groomParents', content.groom_parents);
+  setText('groomNameInv', content.groom_name);
+  setText('brideParents', content.bride_parents);
+  setText('brideNameInv', content.bride_name);
+  setText('invitationSignature', content.invitation_signature);
+  setText('cdGroomName', content.groom_name);
+  setText('cdBrideName', content.bride_name);
+  setText('countdownDateText', content.wedding_datetime_text);
+  setText('guestSnapPrizeNote', content.guest_snap_prize_note);
+  setText('footerNames', content.groom_name && content.bride_name ? `${content.groom_name} · ${content.bride_name}` : null);
+  setText('footerDateText', content.wedding_datetime_text);
+  setText('footerVenueText', content.venue_name);
+
+  if (content.invitation_message) {
+    const el = document.getElementById('invitationMessage');
+    if (el) el.innerHTML = escapeHtml(content.invitation_message).split('\n').join('<br/>');
+  }
+})();
+
+// ---- Wedding accounts (Supabase-backed, managed via admin.html) ----
+(async function loadWeddingAccounts() {
+  const { data, error } = await sb.from('wedding_accounts').select('*').order('position', { ascending: true });
+  if (error || !data) return;
+
+  const bankIcon = (icon, holder) => {
+    if (icon === 'kb') return `<img class="bank-badge-img bank-badge-kb" src="img/icon-kb.png" alt="" />`;
+    if (icon === 'nh') return `<img class="bank-badge-img" src="img/icon-nh.png" alt="" />`;
+    return '';
+  };
+
+  const renderEntry = (a) => `
+    <div class="account-entry">
+      <p class="account-name">${escapeHtml(a.display_name)}</p>
+      <div class="account-row">
+        <div class="account-detail">
+          <span class="account-number">${escapeHtml(a.account_number)}</span>
+          <span class="bank-info">${bankIcon(a.bank_icon)}${escapeHtml(a.bank_name)} ${escapeHtml(a.holder_name)}</span>
+        </div>
+        <div class="account-actions">
+          <button class="btn-copy" data-copy="${escapeHtml(a.account_number)}">복사</button>
+          ${
+            a.kakaopay_url
+              ? `<a class="btn-kpay" href="${escapeHtml(a.kakaopay_url)}" target="_blank" rel="noopener" aria-label="카카오페이로 송금하기"><img class="kpay-icon" src="img/kpay.svg" alt="" /></a>`
+              : ''
+          }
+        </div>
+      </div>
+    </div>
+  `;
+
+  const groomEl = document.getElementById('groomAccounts');
+  const brideEl = document.getElementById('brideAccounts');
+  const groomAccounts = data.filter((a) => a.side === 'groom');
+  const brideAccounts = data.filter((a) => a.side === 'bride');
+  if (groomEl) groomEl.innerHTML = groomAccounts.map(renderEntry).join('') || '<p class="empty-note">등록된 계좌가 없습니다.</p>';
+  if (brideEl) brideEl.innerHTML = brideAccounts.map(renderEntry).join('') || '<p class="empty-note">등록된 계좌가 없습니다.</p>';
+})();
+
 document.getElementById('lightboxClose').addEventListener('click', () => {
   lightbox.hidden = true;
 });
@@ -358,11 +428,11 @@ document.querySelectorAll('.accordion-header').forEach((header) => {
   });
 });
 
-// ---- Copy buttons ----
-document.querySelectorAll('.btn-copy').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    navigator.clipboard.writeText(btn.dataset.copy).then(() => showToast('복사되었습니다.'));
-  });
+// ---- Copy buttons (event delegation so dynamically-rendered accounts work too) ----
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn-copy');
+  if (!btn) return;
+  navigator.clipboard.writeText(btn.dataset.copy).then(() => showToast('복사되었습니다.'));
 });
 // ---- Kakao Share ----
 (function setupKakaoShare() {

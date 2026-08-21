@@ -12,7 +12,19 @@ function enterApp() {
   gate.style.display = 'none';
   app.style.display = 'block';
   loadPhotos();
+  loadContent();
+  loadAccounts();
 }
+
+// ---- Tabs ----
+document.querySelectorAll('.tab-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+  });
+});
 
 function tryLogin() {
   if (pwInput.value === ADMIN_PASSWORD) {
@@ -220,4 +232,163 @@ fileInput.addEventListener('change', () => handleFiles(fileInput.files));
 );
 uploadBox.addEventListener('drop', (e) => {
   if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+
+// ---- Site content (text) ----
+const CONTENT_KEYS = [
+  'groom_name',
+  'bride_name',
+  'groom_parents',
+  'bride_parents',
+  'invitation_message',
+  'invitation_signature',
+  'wedding_datetime_text',
+  'venue_name',
+  'guest_snap_prize_note',
+];
+
+async function loadContent() {
+  const { data, error } = await sb.from('site_content').select('key, value');
+  if (error || !data) {
+    showToast('문구를 불러오지 못했습니다.');
+    return;
+  }
+  const content = Object.fromEntries(data.map((row) => [row.key, row.value]));
+  CONTENT_KEYS.forEach((key) => {
+    const el = document.getElementById(`cf-${key}`);
+    if (el) el.value = content[key] || '';
+  });
+}
+
+document.getElementById('saveContentBtn').addEventListener('click', async (e) => {
+  const btn = e.target;
+  btn.disabled = true;
+  const rows = CONTENT_KEYS.map((key) => ({
+    key,
+    value: document.getElementById(`cf-${key}`).value,
+  }));
+  const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  btn.disabled = false;
+  showToast(error ? '저장에 실패했습니다.' : '문구를 저장했습니다.');
+});
+
+// ---- Wedding accounts ----
+let accounts = [];
+
+async function loadAccounts() {
+  const { data, error } = await sb.from('wedding_accounts').select('*').order('position', { ascending: true });
+  if (error || !data) {
+    showToast('계좌 목록을 불러오지 못했습니다.');
+    return;
+  }
+  accounts = data;
+  renderAccounts();
+}
+
+function accountCardHtml(a) {
+  const id = a.id || '';
+  return `
+    <div class="account-card" data-id="${id}" data-side="${a.side}">
+      <div class="field-group">
+        <label>표시 이름</label>
+        <input type="text" class="f-display_name" value="${escapeAttr(a.display_name)}" placeholder="예: 신랑 박진혁" />
+      </div>
+      <div class="account-card-row">
+        <div class="field-group">
+          <label>은행</label>
+          <select class="f-bank_icon">
+            <option value="kb" ${a.bank_icon === 'kb' ? 'selected' : ''}>KB국민은행</option>
+            <option value="nh" ${a.bank_icon === 'nh' ? 'selected' : ''}>NH농협은행</option>
+            <option value="none" ${a.bank_icon === 'none' ? 'selected' : ''}>기타(아이콘 없음)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>은행명 표시</label>
+          <input type="text" class="f-bank_name" value="${escapeAttr(a.bank_name)}" placeholder="예: 국민은행" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label>예금주</label>
+        <input type="text" class="f-holder_name" value="${escapeAttr(a.holder_name)}" placeholder="예: 박진혁" />
+      </div>
+      <div class="field-group">
+        <label>계좌번호</label>
+        <input type="text" class="f-account_number" value="${escapeAttr(a.account_number)}" />
+      </div>
+      <div class="field-group">
+        <label>카카오페이 송금 링크 (선택)</label>
+        <input type="text" class="f-kakaopay_url" value="${escapeAttr(a.kakaopay_url || '')}" placeholder="https://qr.kakaopay.com/..." />
+      </div>
+      <div class="account-card-actions">
+        <button class="save-account-btn">저장</button>
+        <button class="delete-account-btn">삭제</button>
+      </div>
+    </div>
+  `;
+}
+
+function escapeAttr(str) {
+  return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function renderAccounts() {
+  const groomEl = document.getElementById('groomAccountList');
+  const brideEl = document.getElementById('brideAccountList');
+  const groomAccounts = accounts.filter((a) => a.side === 'groom');
+  const brideAccounts = accounts.filter((a) => a.side === 'bride');
+  groomEl.innerHTML = groomAccounts.map(accountCardHtml).join('');
+  brideEl.innerHTML = brideAccounts.map(accountCardHtml).join('');
+}
+
+function readCardFields(card) {
+  return {
+    display_name: card.querySelector('.f-display_name').value.trim(),
+    bank_icon: card.querySelector('.f-bank_icon').value,
+    bank_name: card.querySelector('.f-bank_name').value.trim(),
+    holder_name: card.querySelector('.f-holder_name').value.trim(),
+    account_number: card.querySelector('.f-account_number').value.trim(),
+    kakaopay_url: card.querySelector('.f-kakaopay_url').value.trim() || null,
+  };
+}
+
+document.getElementById('tab-accounts').addEventListener('click', async (e) => {
+  const saveBtn = e.target.closest('.save-account-btn');
+  const deleteBtn = e.target.closest('.delete-account-btn');
+  const addBtn = e.target.closest('.add-account-btn');
+
+  if (saveBtn) {
+    const card = saveBtn.closest('.account-card');
+    const fields = readCardFields(card);
+    const id = card.dataset.id;
+    saveBtn.disabled = true;
+    let error;
+    if (id) {
+      ({ error } = await sb.from('wedding_accounts').update(fields).eq('id', id));
+    } else {
+      const side = card.dataset.side;
+      const position = accounts.filter((a) => a.side === side).length;
+      ({ error } = await sb.from('wedding_accounts').insert({ ...fields, side, position }));
+    }
+    saveBtn.disabled = false;
+    showToast(error ? '저장에 실패했습니다.' : '계좌를 저장했습니다.');
+    if (!error) await loadAccounts();
+  } else if (deleteBtn) {
+    const card = deleteBtn.closest('.account-card');
+    const id = card.dataset.id;
+    if (!id) {
+      card.remove();
+      return;
+    }
+    if (!confirm('이 계좌를 삭제할까요?')) return;
+    deleteBtn.disabled = true;
+    const { error } = await sb.from('wedding_accounts').delete().eq('id', id);
+    deleteBtn.disabled = false;
+    showToast(error ? '삭제에 실패했습니다.' : '삭제했습니다.');
+    if (!error) await loadAccounts();
+  } else if (addBtn) {
+    const side = addBtn.dataset.side;
+    const blank = { id: null, side, display_name: '', bank_icon: 'kb', bank_name: '', holder_name: '', account_number: '', kakaopay_url: '' };
+    const listEl = document.getElementById(side === 'groom' ? 'groomAccountList' : 'brideAccountList');
+    listEl.insertAdjacentHTML('beforeend', accountCardHtml(blank));
+  }
 });

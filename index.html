@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=29" />
+<link rel="stylesheet" href="styles.css?v=30" />
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js" integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -38,7 +38,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="eyebrow">WE ARE GETTING MARRIED</p>
-      <h1 class="names">박진혁 · 서하늘</h1>
+      <h1 class="names" id="heroNames">박진혁 · 서하늘</h1>
     </div>
     <div class="scroll-indicator">
       <span>SCROLL</span>
@@ -50,9 +50,9 @@
   <section class="section invitation">
     <p class="eyebrow">INVITATION</p>
     <div class="invitation-card">
-      <p class="parents-line">박창희 · 박선희의 장남 <strong>박진혁</strong></p>
-      <p class="parents-line">이혜영의 장녀 <strong>서하늘</strong></p>
-      <p class="invitation-text">
+      <p class="parents-line"><span id="groomParents">박창희 · 박선희의 장남</span> <strong id="groomNameInv">박진혁</strong></p>
+      <p class="parents-line"><span id="brideParents">이혜영의 장녀</span> <strong id="brideNameInv">서하늘</strong></p>
+      <p class="invitation-text" id="invitationMessage">
         오랜 시간 걸음 지키며<br/>
         서로의 하루가 되어주었습니다.<br/><br/>
         이제 부부라는 이름으로<br/>
@@ -60,7 +60,7 @@
         이 뜻깊은 시작의 자리에<br/>
         소중한 분들을 정중히 초대합니다.
       </p>
-      <p class="signature">박진혁 · 서하늘 드림</p>
+      <p class="signature" id="invitationSignature">박진혁 · 서하늘 드림</p>
     </div>
   </section>
 
@@ -104,8 +104,8 @@
       <div class="cd-box"><span id="cdMinutes">--</span><small>MIN</small></div>
       <div class="cd-box"><span id="cdSeconds">--</span><small>SEC</small></div>
     </div>
-    <p class="countdown-line" id="countdownLine">박진혁 🖤 서하늘의 결혼식이 <strong id="cdDaysInline">--</strong>일 남았습니다</p>
-    <p class="placeholder-note">2026년 10월 10일 오후 5시 50분</p>
+    <p class="countdown-line" id="countdownLine"><span id="cdGroomName">박진혁</span> 🖤 <span id="cdBrideName">서하늘</span>의 결혼식이 <strong id="cdDaysInline">--</strong>일 남았습니다</p>
+    <p class="placeholder-note" id="countdownDateText">2026년 10월 10일 오후 5시 50분</p>
   </section>
 
   <div class="divider"></div>
@@ -193,7 +193,7 @@
     <p class="hint">참석이 어려우신 분들을 위해 계좌번호를 안내드립니다.</p>
     <div class="accordion">
       <button class="accordion-header">신랑측 <span class="accordion-chevron">⌄</span></button>
-      <div class="accordion-body accordion-body-list">
+      <div class="accordion-body accordion-body-list" id="groomAccounts">
         <div class="account-entry">
           <p class="account-name">신랑 박진혁</p>
           <div class="account-row">
@@ -213,7 +213,7 @@
     </div>
     <div class="accordion">
       <button class="accordion-header">신부측 <span class="accordion-chevron">⌄</span></button>
-      <div class="accordion-body accordion-body-list">
+      <div class="accordion-body accordion-body-list" id="brideAccounts">
         <div class="account-entry">
           <p class="account-name">신부 서하늘</p>
           <div class="account-row">
@@ -271,7 +271,7 @@
         <li>하객분들의 즐거운 표정</li>
         <li>가족·친구들과 함께한 순간</li>
       </ul>
-      <p class="placeholder-note">PLACEHOLDER: 우수 사진 선정 경품 안내 (예: 소정의 선물 증정) 확정 시 안내드립니다</p>
+      <p class="placeholder-note" id="guestSnapPrizeNote">PLACEHOLDER: 우수 사진 선정 경품 안내 (예: 소정의 선물 증정) 확정 시 안내드립니다</p>
     </div>
 
     <div class="guest-snap-upload" id="guestSnapUpload">
@@ -304,8 +304,8 @@
 
   <!-- 11. 푸터 -->
   <footer class="section footer">
-    <p class="footer-names">박진혁 · 서하늘</p>
-    <p class="footer-date">2026년 10월 10일 토요일 오후 5시 50분 · 경기교총웨딩하우스</p>
+    <p class="footer-names" id="footerNames">박진혁 · 서하늘</p>
+    <p class="footer-date"><span id="footerDateText">2026년 10월 10일 토요일 오후 5시 50분</span> · <span id="footerVenueText">경기교총웨딩하우스</span></p>
   </footer>
 
 </div>
@@ -372,6 +372,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js"></script>
 <script src="config.js?v=8"></script>
-<script src="script.js?v=21"></script>
+<script src="script.js?v=22"></script>
 </body>
 </html>
