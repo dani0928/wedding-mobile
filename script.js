@@ -231,6 +231,29 @@ function bindLightboxGroup(containerSelector) {
 }
 bindLightboxGroup('#galleryCarousel');
 
+// ---- Gallery + hero (Supabase-backed, managed via admin.html) ----
+(async function loadGalleryFromSupabase() {
+  const heroImg = document.getElementById('heroImg');
+  const galleryGrid = document.getElementById('galleryCarousel');
+
+  const { data, error } = await sb.from('gallery_photos').select('*').order('position', { ascending: true });
+  if (error || !data || data.length === 0) return;
+
+  const hero = data.find((p) => p.is_hero) || data[0];
+  heroImg.onerror = null;
+  heroImg.src = sb.storage.from('gallery').getPublicUrl(hero.file_path).data.publicUrl;
+
+  const tiles = data.filter((p) => p.id !== hero.id);
+  galleryGrid.innerHTML = tiles
+    .map((p) => {
+      const url = sb.storage.from('gallery').getPublicUrl(p.file_path).data.publicUrl;
+      return `<div class="gallery-tile"><img src="${url}" alt="" loading="lazy" /></div>`;
+    })
+    .join('');
+
+  bindLightboxGroup('#galleryCarousel');
+})();
+
 document.getElementById('lightboxClose').addEventListener('click', () => {
   lightbox.hidden = true;
 });

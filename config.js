@@ -7,3 +7,6 @@ const NAVER_MAP_CLIENT_ID = "irp6sboncv";
 
 // Kakao Developers JavaScript key (developers.kakao.com > 앱 설정 > 앱 키)
 const KAKAO_JS_KEY = "594fe9264e1b70c4a07d1a69a5bf013c";
+
+// Shared password for admin.html (photo manager). Change anytime.
+const ADMIN_PASSWORD = "jinhyuk1010";

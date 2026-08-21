@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="robots" content="noindex,nofollow" />
+<title>사진 관리 · 박진혁 · 서하늘</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ivory: #fffdf7;
+    --ivory-deep: #fbf6ea;
+    --accent: #8ecae6;
+    --accent-deep: #5fa8cc;
+    --accent-soft: #e3f2fb;
+    --ink: #3a352c;
+    --ink-soft: #86807a;
+    --border-soft: #e8e2d4;
+    --danger: #e0645a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--ivory);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 24px 18px 80px; }
+  h1 { font-size: 1.15rem; margin: 0 0 4px; }
+  .sub { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 20px; }
+
+  /* Password gate */
+  #gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+  #gate h1 { font-size: 1.2rem; margin-bottom: 18px; }
+  #gate input {
+    width: 100%; max-width: 260px; padding: 12px 14px; border: 1.5px solid var(--border-soft);
+    border-radius: 10px; font-size: 1rem; text-align: center; margin-bottom: 12px;
+  }
+  #gate input:focus { outline: none; border-color: var(--accent); }
+  #gate button {
+    width: 100%; max-width: 260px; padding: 12px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  }
+  #gate button:active { transform: scale(0.98); }
+  #gateError { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
+
+  #app { display: none; }
+
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .lock-btn { background: none; border: 1px solid var(--border-soft); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; color: var(--ink-soft); cursor: pointer; }
+
+  .upload-box {
+    border: 2px dashed var(--border-soft); border-radius: 14px; padding: 22px 16px;
+    text-align: center; margin-bottom: 26px; background: var(--ivory-deep);
+  }
+  .upload-box.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .upload-box p { margin: 0 0 12px; font-size: 0.85rem; color: var(--ink-soft); }
+  .upload-btn {
+    display: inline-block; background: var(--accent); color: #fff; border: none; border-radius: 999px;
+    padding: 10px 22px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  }
+  #fileInput { display: none; }
+  #uploadStatus { margin-top: 12px; font-size: 0.78rem; color: var(--accent-deep); min-height: 1.2em; }
+
+  .section-label { font-size: 0.85rem; font-weight: 700; margin: 0 0 12px; color: var(--ink); }
+  .photo-list { display: flex; flex-direction: column; gap: 10px; }
+  .photo-card {
+    display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--border-soft);
+    border-radius: 12px; padding: 8px; position: relative;
+  }
+  .photo-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--ivory-deep); }
+  .photo-meta { flex: 1; min-width: 0; }
+  .photo-order { font-size: 0.72rem; color: var(--ink-soft); }
+  .hero-badge {
+    display: inline-block; margin-top: 3px; font-size: 0.68rem; font-weight: 700; color: var(--accent-deep);
+    background: var(--accent-soft); border-radius: 6px; padding: 2px 6px;
+  }
+  .photo-actions { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+  .icon-btn {
+    border: 1px solid var(--border-soft); background: #fff; border-radius: 7px; width: 30px; height: 30px;
+    font-size: 0.85rem; cursor: pointer; color: var(--ink); display: flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:active { transform: scale(0.94); }
+  .icon-btn.hero-set { color: var(--accent-deep); border-color: var(--accent); }
+  .icon-btn.danger { color: var(--danger); border-color: #f1c9c5; }
+  .empty-note { font-size: 0.82rem; color: var(--ink-soft); text-align: center; padding: 20px 0; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink);
+    color: #fff; font-size: 0.82rem; padding: 10px 18px; border-radius: 999px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s; z-index: 50; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>사진 관리자 페이지</h1>
+  <input type="password" id="pwInput" placeholder="비밀번호" autocomplete="off" />
+  <button id="pwSubmit">입장</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <div class="toolbar">
+      <div>
+        <h1>사진 관리</h1>
+        <p class="sub">업로드 · 삭제 · 순서변경 · 대표사진 지정이 사이트에 바로 반영됩니다</p>
+      </div>
+      <button class="lock-btn" id="lockBtn">잠그기</button>
+    </div>
+
+    <div class="upload-box" id="uploadBox">
+      <p>사진을 여기로 끌어놓거나 선택해서 업로드하세요</p>
+      <label class="upload-btn" for="fileInput">사진 선택</label>
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <p id="uploadStatus"></p>
+    </div>
+
+    <p class="section-label">현재 사진 (⭐ = 대표사진)</p>
+    <div class="photo-list" id="photoList"></div>
+  </div>
+</div>
+
+<p class="toast" id="toast"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
