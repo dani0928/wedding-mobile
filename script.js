@@ -233,7 +233,6 @@ function bindLightboxGroup(containerSelector) {
     });
   });
 }
-bindLightboxGroup('#galleryCarousel');
 
 document.addEventListener('contextmenu', (e) => {
   if (e.target.closest('.gallery-tile-img') || e.target === lightboxImg) e.preventDefault();
