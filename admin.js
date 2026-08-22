@@ -95,6 +95,7 @@ function render() {
           <button class="icon-btn" data-action="up" ${i === 0 ? 'disabled' : ''} aria-label="위로">↑</button>
           <button class="icon-btn" data-action="down" ${i === photos.length - 1 ? 'disabled' : ''} aria-label="아래로">↓</button>
           <button class="icon-btn hero-set" data-action="hero" aria-label="대표사진으로 지정">⭐</button>
+          <button class="icon-btn" data-action="copy" aria-label="링크 복사">🔗</button>
           <button class="icon-btn danger" data-action="delete" aria-label="삭제">✕</button>
         </div>
       </div>
@@ -135,6 +136,21 @@ photoList.addEventListener('click', async (e) => {
     await sb.from('gallery_photos').delete().eq('id', id);
     showToast('삭제했습니다.');
     await loadPhotos();
+  } else if (action === 'copy') {
+    const url = publicUrl(photos[index].file_path);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    showToast('사진 링크를 복사했습니다.');
   }
 });
 
