@@ -50,6 +50,16 @@
   .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
   .lock-btn { background: none; border: 1px solid var(--border-soft); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; color: var(--ink-soft); cursor: pointer; }
 
+  .share-thumb-box {
+    border: 1px solid var(--border-soft); border-radius: 14px; padding: 16px;
+    margin-bottom: 20px; background: #fff;
+  }
+  .share-thumb-hint { margin: 4px 0 0; font-size: 0.76rem; color: var(--ink-soft); line-height: 1.5; }
+  .share-thumb-row { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+  .share-thumb-preview {
+    width: 64px; height: 64px; border-radius: 10px; object-fit: cover;
+    background: var(--ivory-deep); flex-shrink: 0; visibility: hidden;
+  }
   .upload-box {
     border: 2px dashed var(--border-soft); border-radius: 14px; padding: 22px 16px;
     text-align: center; margin-bottom: 26px; background: var(--ivory-deep);
@@ -160,6 +170,17 @@
     </div>
 
     <div class="tab-panel active" id="tab-photos">
+      <div class="share-thumb-box">
+        <p class="section-label">공유 썸네일 (카톡·링크 미리보기 전용)</p>
+        <p class="share-thumb-hint">여기서 올리는 사진은 청첩장 갤러리에는 보이지 않고, 카카오톡이나 링크를 공유할 때 미리보기 이미지로만 사용됩니다.</p>
+        <div class="share-thumb-row">
+          <img id="shareThumbPreview" class="share-thumb-preview" alt="" />
+          <label class="upload-btn" for="shareThumbInput">사진 선택</label>
+          <input type="file" id="shareThumbInput" accept="image/*" hidden />
+        </div>
+        <p id="shareThumbStatus" class="share-thumb-hint"></p>
+      </div>
+
       <div class="upload-box" id="uploadBox">
         <p>사진을 여기로 끌어놓거나 선택해서 업로드하세요</p>
         <label class="upload-btn" for="fileInput">사진 선택</label>

@@ -154,6 +154,35 @@ photoList.addEventListener('click', async (e) => {
   }
 });
 
+// ---- Share thumbnail (og:image / Kakao 공유 미리보기 전용, 갤러리에는 노출되지 않음) ----
+const SHARE_THUMB_PATH = 'share-thumbnail.jpg';
+const shareThumbInput = document.getElementById('shareThumbInput');
+const shareThumbPreview = document.getElementById('shareThumbPreview');
+const shareThumbStatus = document.getElementById('shareThumbStatus');
+
+function loadShareThumbPreview() {
+  shareThumbPreview.onload = () => { shareThumbPreview.style.visibility = 'visible'; };
+  shareThumbPreview.onerror = () => { shareThumbPreview.style.visibility = 'hidden'; };
+  shareThumbPreview.src = `${publicUrl(SHARE_THUMB_PATH)}?t=${Date.now()}`;
+}
+loadShareThumbPreview();
+
+shareThumbInput.addEventListener('change', async () => {
+  const file = shareThumbInput.files[0];
+  if (!file) return;
+  shareThumbStatus.textContent = '업로드 중...';
+  const compressed = await compressImage(file);
+  const { error } = await sb.storage.from(BUCKET).upload(SHARE_THUMB_PATH, compressed, { contentType: 'image/jpeg', upsert: true });
+  shareThumbInput.value = '';
+  if (error) {
+    shareThumbStatus.textContent = '업로드에 실패했습니다. 다시 시도해주세요.';
+    return;
+  }
+  shareThumbStatus.textContent = '공유 썸네일을 업데이트했습니다.';
+  loadShareThumbPreview();
+  showToast('공유 썸네일을 업데이트했습니다.');
+});
+
 // ---- Upload ----
 const uploadBox = document.getElementById('uploadBox');
 const fileInput = document.getElementById('fileInput');
