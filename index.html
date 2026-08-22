@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=31" />
+<link rel="stylesheet" href="styles.css?v=32" />
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js" integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -72,22 +72,22 @@
     <h2 class="section-title">우리의 순간</h2>
     <p class="hint">사진을 눌러 크게 보세요</p>
     <div class="gallery-grid" id="galleryCarousel">
-      <div class="gallery-tile"><img src="img/A3_01974.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_02531.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_02859.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_02418.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_02507.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_03447.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_04360.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_04478.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/A3_04855.jpg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1306.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1307.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1308.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1309.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1310.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1311.jpeg" alt="" loading="lazy" /></div>
-      <div class="gallery-tile"><img src="img/IMG_1312.jpeg" alt="" loading="lazy" /></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_01974.jpg" style="background-image:url('img/A3_01974.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_02531.jpg" style="background-image:url('img/A3_02531.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_02859.jpg" style="background-image:url('img/A3_02859.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_02418.jpg" style="background-image:url('img/A3_02418.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_02507.jpg" style="background-image:url('img/A3_02507.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_03447.jpg" style="background-image:url('img/A3_03447.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_04360.jpg" style="background-image:url('img/A3_04360.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_04478.jpg" style="background-image:url('img/A3_04478.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/A3_04855.jpg" style="background-image:url('img/A3_04855.jpg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1306.jpeg" style="background-image:url('img/IMG_1306.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1307.jpeg" style="background-image:url('img/IMG_1307.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1308.jpeg" style="background-image:url('img/IMG_1308.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1309.jpeg" style="background-image:url('img/IMG_1309.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1310.jpeg" style="background-image:url('img/IMG_1310.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1311.jpeg" style="background-image:url('img/IMG_1311.jpeg')" role="img"></div></div>
+      <div class="gallery-tile"><div class="gallery-tile-img" data-src="img/IMG_1312.jpeg" style="background-image:url('img/IMG_1312.jpeg')" role="img"></div></div>
     </div>
   </section>
 
@@ -363,7 +363,7 @@
 <div class="lightbox" id="lightbox" hidden>
   <button class="lightbox-close" id="lightboxClose">×</button>
   <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="이전 사진">‹</button>
-  <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+  <div class="lightbox-img" id="lightboxImg" role="img" aria-label="확대 사진"></div>
   <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="다음 사진">›</button>
 </div>
 
@@ -372,6 +372,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js"></script>
 <script src="config.js?v=8"></script>
-<script src="script.js?v=23"></script>
+<script src="script.js?v=24"></script>
 </body>
 </html>

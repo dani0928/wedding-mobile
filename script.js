@@ -212,7 +212,7 @@ let lightboxIndex = 0;
 
 function showLightboxImage(i) {
   lightboxIndex = (i + lightboxImages.length) % lightboxImages.length;
-  lightboxImg.src = lightboxImages[lightboxIndex];
+  lightboxImg.style.backgroundImage = `url("${lightboxImages[lightboxIndex]}")`;
 }
 
 function openLightbox(images, startIndex) {
@@ -221,21 +221,25 @@ function openLightbox(images, startIndex) {
   lightbox.hidden = false;
 }
 
+// Gallery photos render as background-image divs (not <img>) so that
+// in-app browsers like KakaoTalk's, which attach their own long-press
+// "save image" menu specifically to <img> elements, have nothing to hook.
 function bindLightboxGroup(containerSelector) {
   document.querySelectorAll(containerSelector).forEach((container) => {
-    const imgs = Array.from(container.querySelectorAll('img'));
-    imgs.forEach((img, i) => {
-      img.addEventListener('click', () => openLightbox(imgs.map((el) => el.src), i));
+    const tiles = Array.from(container.querySelectorAll('.gallery-tile-img, img[data-lightbox]'));
+    tiles.forEach((tile, i) => {
+      const getSrc = (el) => el.dataset.src || el.src;
+      tile.addEventListener('click', () => openLightbox(tiles.map(getSrc), i));
     });
   });
 }
 bindLightboxGroup('#galleryCarousel');
 
 document.addEventListener('contextmenu', (e) => {
-  if (e.target.closest('.gallery-tile img') || e.target === lightboxImg) e.preventDefault();
+  if (e.target.closest('.gallery-tile-img') || e.target === lightboxImg) e.preventDefault();
 });
 document.addEventListener('dragstart', (e) => {
-  if (e.target.closest('.gallery-tile img') || e.target === lightboxImg) e.preventDefault();
+  if (e.target.closest('.gallery-tile-img') || e.target === lightboxImg) e.preventDefault();
 });
 
 // ---- Gallery + hero (Supabase-backed, managed via admin.html) ----
@@ -251,12 +255,12 @@ document.addEventListener('dragstart', (e) => {
   heroImg.src = sb.storage.from('gallery').getPublicUrl(hero.file_path).data.publicUrl;
 
   const tiles = data.filter((p) => p.id !== hero.id);
-  galleryGrid.innerHTML = tiles
-    .map((p) => {
-      const url = sb.storage.from('gallery').getPublicUrl(p.file_path).data.publicUrl;
-      return `<div class="gallery-tile"><img src="${url}" alt="" loading="lazy" /></div>`;
-    })
-    .join('');
+  galleryGrid.innerHTML = tiles.map(() => '<div class="gallery-tile"><div class="gallery-tile-img" role="img"></div></div>').join('');
+  Array.from(galleryGrid.querySelectorAll('.gallery-tile-img')).forEach((tile, i) => {
+    const url = sb.storage.from('gallery').getPublicUrl(tiles[i].file_path).data.publicUrl;
+    tile.dataset.src = url;
+    tile.style.backgroundImage = `url("${url}")`;
+  });
 
   bindLightboxGroup('#galleryCarousel');
 })();
