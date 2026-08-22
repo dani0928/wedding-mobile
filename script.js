@@ -275,7 +275,7 @@ document.addEventListener('dragstart', (e) => {
     if (el && value != null) el.textContent = value;
   };
 
-  setText('heroNames', content.groom_name && content.bride_name ? `${content.groom_name} · ${content.bride_name}` : null);
+  setText('heroNames', content.groom_name && content.bride_name ? `${content.bride_name} · ${content.groom_name}` : null);
   setText('groomParents', content.groom_parents);
   setText('groomNameInv', content.groom_name);
   setText('brideParents', content.bride_parents);
