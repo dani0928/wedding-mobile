@@ -14,6 +14,22 @@ function enterApp() {
   loadPhotos();
   loadContent();
   loadAccounts();
+  loadRsvps();
+  loadGuestbookAdmin();
+  loadSnapsAdmin();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 // ---- Tabs ----
@@ -436,4 +452,139 @@ document.getElementById('tab-accounts').addEventListener('click', async (e) => {
     const listEl = document.getElementById(side === 'groom' ? 'groomAccountList' : 'brideAccountList');
     listEl.insertAdjacentHTML('beforeend', accountCardHtml(blank));
   }
+});
+
+// ---- RSVP submissions ----
+const rsvpList = document.getElementById('rsvpList');
+
+async function loadRsvps() {
+  const { data, error } = await sb.from('rsvp_submissions').select('*').order('created_at', { ascending: false });
+  if (error) {
+    rsvpList.innerHTML = '<p class="empty-note">불러오지 못했습니다.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    rsvpList.innerHTML = '<p class="empty-note">아직 참석 의사 응답이 없습니다.</p>';
+    return;
+  }
+  rsvpList.innerHTML = data
+    .map((r) => {
+      const details = [
+        r.attendance ? escapeHtml(r.attendance) : null,
+        r.guest_count ? `${escapeHtml(r.guest_count)}명` : null,
+        r.companion ? `동행: ${escapeHtml(r.companion)}` : null,
+        r.meal_preference ? `식사: ${escapeHtml(r.meal_preference)}` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ');
+      return `
+      <div class="admin-list-card" data-id="${r.id}">
+        <div class="admin-list-main">
+          <p class="admin-list-title">${escapeHtml(r.name)}${r.side ? `<span class="admin-list-tag">${escapeHtml(r.side)}</span>` : ''}</p>
+          <p class="admin-list-sub">${details}</p>
+          <p class="admin-list-date">${formatDate(r.created_at)}</p>
+        </div>
+        <button class="icon-btn danger" aria-label="삭제">✕</button>
+      </div>`;
+    })
+    .join('');
+}
+
+rsvpList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.icon-btn');
+  if (!btn) return;
+  const id = btn.closest('.admin-list-card').dataset.id;
+  if (!confirm('이 응답을 삭제할까요?')) return;
+  btn.disabled = true;
+  const { error } = await sb.from('rsvp_submissions').delete().eq('id', id);
+  showToast(error ? '삭제에 실패했습니다.' : '삭제했습니다.');
+  if (!error) await loadRsvps();
+});
+
+// ---- Guestbook messages ----
+const guestbookAdminList = document.getElementById('guestbookAdminList');
+
+async function loadGuestbookAdmin() {
+  const { data, error } = await sb.from('guestbook_messages').select('*').order('created_at', { ascending: false });
+  if (error) {
+    guestbookAdminList.innerHTML = '<p class="empty-note">불러오지 못했습니다.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    guestbookAdminList.innerHTML = '<p class="empty-note">아직 방명록 메시지가 없습니다.</p>';
+    return;
+  }
+  guestbookAdminList.innerHTML = data
+    .map(
+      (m) => `
+      <div class="admin-list-card" data-id="${m.id}">
+        <div class="admin-list-main">
+          <p class="admin-list-title">${escapeHtml(m.author)}</p>
+          <p class="admin-list-sub">${escapeHtml(m.content)}</p>
+          <p class="admin-list-date">${formatDate(m.created_at)}</p>
+        </div>
+        <button class="icon-btn danger" aria-label="삭제">✕</button>
+      </div>`
+    )
+    .join('');
+}
+
+guestbookAdminList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.icon-btn');
+  if (!btn) return;
+  const id = btn.closest('.admin-list-card').dataset.id;
+  if (!confirm('이 메시지를 삭제할까요?')) return;
+  btn.disabled = true;
+  const { error } = await sb.from('guestbook_messages').delete().eq('id', id);
+  showToast(error ? '삭제에 실패했습니다.' : '삭제했습니다.');
+  if (!error) await loadGuestbookAdmin();
+});
+
+// ---- Guest snap uploads ----
+const SNAP_BUCKET = 'guest-snap';
+const snapAdminList = document.getElementById('snapAdminList');
+
+async function loadSnapsAdmin() {
+  const { data, error } = await sb.from('guest_snaps').select('*').order('created_at', { ascending: false });
+  if (error) {
+    snapAdminList.innerHTML = '<p class="empty-note">불러오지 못했습니다.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    snapAdminList.innerHTML = '<p class="empty-note">아직 업로드된 게스트 스냅이 없습니다.</p>';
+    return;
+  }
+  snapAdminList.innerHTML = data
+    .map((s) => {
+      const url = sb.storage.from(SNAP_BUCKET).getPublicUrl(s.file_path).data.publicUrl;
+      const media =
+        s.file_type === 'video'
+          ? `<video class="admin-list-thumb" src="${url}" muted preload="metadata"></video>`
+          : `<img class="admin-list-thumb" src="${url}" alt="" loading="lazy" />`;
+      return `
+      <div class="admin-list-card" data-id="${s.id}" data-file="${escapeHtml(s.file_path)}">
+        ${media}
+        <div class="admin-list-main">
+          <p class="admin-list-title">${escapeHtml(s.author)}</p>
+          ${s.caption ? `<p class="admin-list-sub">${escapeHtml(s.caption)}</p>` : ''}
+          <p class="admin-list-date">${formatDate(s.created_at)}</p>
+        </div>
+        <button class="icon-btn danger" aria-label="삭제">✕</button>
+      </div>`;
+    })
+    .join('');
+}
+
+snapAdminList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.icon-btn');
+  if (!btn) return;
+  const card = btn.closest('.admin-list-card');
+  const id = card.dataset.id;
+  const filePath = card.dataset.file;
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  btn.disabled = true;
+  await sb.storage.from(SNAP_BUCKET).remove([filePath]);
+  const { error } = await sb.from('guest_snaps').delete().eq('id', id);
+  showToast(error ? '삭제에 실패했습니다.' : '삭제했습니다.');
+  if (!error) await loadSnapsAdmin();
 });
