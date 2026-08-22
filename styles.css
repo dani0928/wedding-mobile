@@ -27,6 +27,8 @@ html, body {
   background: #efe9dd;
   font-family: var(--font-sans);
   color: var(--ink);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 body {
@@ -243,6 +245,9 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Countdown */
@@ -754,6 +759,9 @@ body {
   max-height: 90vh;
   object-fit: contain;
   border-radius: 6px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .lightbox-close {
   position: absolute;

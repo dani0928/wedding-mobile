@@ -231,6 +231,13 @@ function bindLightboxGroup(containerSelector) {
 }
 bindLightboxGroup('#galleryCarousel');
 
+document.addEventListener('contextmenu', (e) => {
+  if (e.target.closest('.gallery-tile img') || e.target === lightboxImg) e.preventDefault();
+});
+document.addEventListener('dragstart', (e) => {
+  if (e.target.closest('.gallery-tile img') || e.target === lightboxImg) e.preventDefault();
+});
+
 // ---- Gallery + hero (Supabase-backed, managed via admin.html) ----
 (async function loadGalleryFromSupabase() {
   const heroImg = document.getElementById('heroImg');
