@@ -358,7 +358,10 @@ document.addEventListener('keydown', (e) => {
 
 let lightboxTouchStartX = null;
 lightbox.addEventListener('touchstart', (e) => {
-  lightboxTouchStartX = e.changedTouches[0].clientX;
+  lightboxTouchStartX = e.touches.length === 1 ? e.touches[0].clientX : null;
+});
+lightbox.addEventListener('touchmove', (e) => {
+  if (e.touches.length > 1) lightboxTouchStartX = null;
 });
 lightbox.addEventListener('touchend', (e) => {
   if (lightboxTouchStartX === null) return;
