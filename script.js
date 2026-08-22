@@ -462,7 +462,7 @@ document.addEventListener('click', (e) => {
       content: {
         title: '박진혁 🖤 서하늘 결혼식에 초대합니다',
         description: '2026년 10월 10일 토요일 오후 5시 50분',
-        imageUrl: `${window.location.origin}/img/IMG_1308.jpeg`,
+        imageUrl: 'https://qmqbsldraxuvfsjvkchk.supabase.co/storage/v1/object/public/gallery/1787325221552-lkufj4.jpg',
         link: { mobileWebUrl: window.location.href, webUrl: window.location.href },
       },
       buttons: [
