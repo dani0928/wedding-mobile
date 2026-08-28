@@ -143,6 +143,33 @@
     background: none; color: var(--ink-soft); font-size: 0.82rem; cursor: pointer; margin-bottom: 24px;
   }
 
+  .rsvp-stats {
+    display: flex; align-items: center; gap: 18px; background: #fff; border: 1px solid var(--border-soft);
+    border-radius: 14px; padding: 16px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .rsvp-donut-wrap { flex-shrink: 0; }
+  .rsvp-donut {
+    width: 92px; height: 92px; border-radius: 50%; position: relative;
+    background: conic-gradient(var(--accent-deep) 0% var(--groom-pct, 0%), #f3c9d4 var(--groom-pct, 0%) 100%);
+  }
+  .rsvp-donut-center {
+    position: absolute; inset: 12px; background: #fff; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .rsvp-donut-center span { font-size: 1.15rem; font-weight: 700; color: var(--ink); line-height: 1.1; }
+  .rsvp-donut-center small { font-size: 0.62rem; color: var(--ink-soft); margin-top: 2px; }
+  .rsvp-stat-boxes { display: flex; gap: 10px; flex: 1; min-width: 160px; }
+  .rsvp-stat-box {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: var(--ivory-deep); border-radius: 10px; padding: 10px 8px;
+  }
+  .rsvp-stat-label { font-size: 0.72rem; font-weight: 600; color: var(--ink-soft); }
+  .rsvp-stat-value { font-size: 1.3rem; font-weight: 700; color: var(--ink); }
+  .rsvp-stat-groom .rsvp-stat-value { color: var(--accent-deep); }
+  .rsvp-stat-bride .rsvp-stat-value { color: #d2789a; }
+  .rsvp-stat-sub { font-size: 0.68rem; color: var(--ink-soft); }
+  .rsvp-stat-note { width: 100%; margin: 0; font-size: 0.74rem; color: var(--ink-soft); }
+
   .admin-list { display: flex; flex-direction: column; gap: 10px; }
   .admin-list-card {
     display: flex; align-items: flex-start; gap: 10px; background: #fff; border: 1px solid var(--border-soft);
@@ -261,6 +288,30 @@
     </div>
 
     <div class="tab-panel" id="tab-rsvp">
+      <div class="rsvp-stats" id="rsvpStats">
+        <div class="rsvp-donut-wrap">
+          <div class="rsvp-donut" id="rsvpDonut" style="--groom-pct: 0%">
+            <div class="rsvp-donut-center">
+              <span id="rsvpTotalCount">0</span>
+              <small>참석 인원</small>
+            </div>
+          </div>
+        </div>
+        <div class="rsvp-stat-boxes">
+          <div class="rsvp-stat-box rsvp-stat-groom">
+            <span class="rsvp-stat-label">신랑측</span>
+            <span class="rsvp-stat-value" id="rsvpGroomCount">0</span>
+            <span class="rsvp-stat-sub" id="rsvpGroomResponses">0건</span>
+          </div>
+          <div class="rsvp-stat-box rsvp-stat-bride">
+            <span class="rsvp-stat-label">신부측</span>
+            <span class="rsvp-stat-value" id="rsvpBrideCount">0</span>
+            <span class="rsvp-stat-sub" id="rsvpBrideResponses">0건</span>
+          </div>
+        </div>
+        <p class="rsvp-stat-note" id="rsvpNotComingNote"></p>
+      </div>
+
       <p class="section-label">참석 의사 응답</p>
       <div class="admin-list" id="rsvpList"></div>
     </div>

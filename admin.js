@@ -457,12 +457,44 @@ document.getElementById('tab-accounts').addEventListener('click', async (e) => {
 // ---- RSVP submissions ----
 const rsvpList = document.getElementById('rsvpList');
 
+function updateRsvpStats(data) {
+  let groomCount = 0;
+  let brideCount = 0;
+  let groomResponses = 0;
+  let brideResponses = 0;
+  let notComing = 0;
+  data.forEach((r) => {
+    if (r.attendance !== '참석') {
+      if (r.attendance === '불참석') notComing++;
+      return;
+    }
+    const count = Number(r.guest_count) > 0 ? Number(r.guest_count) : 1;
+    if (r.side === '신랑측') {
+      groomCount += count;
+      groomResponses++;
+    } else if (r.side === '신부측') {
+      brideCount += count;
+      brideResponses++;
+    }
+  });
+  const total = groomCount + brideCount;
+  const groomPct = total > 0 ? (groomCount / total) * 100 : 0;
+  document.getElementById('rsvpDonut').style.setProperty('--groom-pct', `${groomPct}%`);
+  document.getElementById('rsvpTotalCount').textContent = total;
+  document.getElementById('rsvpGroomCount').textContent = groomCount;
+  document.getElementById('rsvpBrideCount').textContent = brideCount;
+  document.getElementById('rsvpGroomResponses').textContent = `${groomResponses}건`;
+  document.getElementById('rsvpBrideResponses').textContent = `${brideResponses}건`;
+  document.getElementById('rsvpNotComingNote').textContent = notComing > 0 ? `불참석 응답 ${notComing}건은 인원에 포함되지 않았습니다.` : '';
+}
+
 async function loadRsvps() {
   const { data, error } = await sb.from('rsvp_submissions').select('*').order('created_at', { ascending: false });
   if (error) {
     rsvpList.innerHTML = '<p class="empty-note">불러오지 못했습니다.</p>';
     return;
   }
+  updateRsvpStats(data || []);
   if (!data || data.length === 0) {
     rsvpList.innerHTML = '<p class="empty-note">아직 참석 의사 응답이 없습니다.</p>';
     return;
