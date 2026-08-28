@@ -396,12 +396,11 @@ const uploadBox = document.getElementById('uploadBox');
 const fileInput = document.getElementById('fileInput');
 const uploadStatus = document.getElementById('uploadStatus');
 
-function compressImage(file) {
+function compressImage(file, maxDim = 1600, quality = 0.82) {
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
-      const maxDim = 1600;
       let { width, height } = img;
       if (width > maxDim || height > maxDim) {
         if (width > height) {
@@ -422,7 +421,7 @@ function compressImage(file) {
           resolve(blob || file);
         },
         'image/jpeg',
-        0.82
+        quality
       );
     };
     img.onerror = () => {
@@ -433,14 +432,20 @@ function compressImage(file) {
   });
 }
 
+// Uploads a full-size version (used by the hero image and lightbox) plus a
+// small "-thumb" version (used by the gallery grid, which is loaded on every
+// site visit - keeping it small is what actually saves bandwidth).
 async function uploadOne(file, position) {
-  const compressed = await compressImage(file);
+  const compressed = await compressImage(file, 1600, 0.82);
+  const thumb = await compressImage(file, 480, 0.75);
   const isCompressed = compressed !== file;
   const ext = isCompressed ? 'jpg' : file.name.split('.').pop() || 'jpg';
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const thumbPath = path.replace(/\.[^.]+$/, '-thumb.jpg');
   const contentType = isCompressed ? 'image/jpeg' : file.type || 'image/jpeg';
   const { error: uploadError } = await sb.storage.from(BUCKET).upload(path, compressed, { contentType });
   if (uploadError) throw uploadError;
+  await sb.storage.from(BUCKET).upload(thumbPath, thumb, { contentType: 'image/jpeg' });
   const { error: insertError } = await sb.from('gallery_photos').insert({ file_path: path, position, is_hero: false });
   if (insertError) throw insertError;
 }

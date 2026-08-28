@@ -256,9 +256,21 @@ document.addEventListener('dragstart', (e) => {
   const tiles = data.filter((p) => p.id !== hero.id);
   galleryGrid.innerHTML = tiles.map(() => '<div class="gallery-tile"><div class="gallery-tile-img" role="img"></div></div>').join('');
   Array.from(galleryGrid.querySelectorAll('.gallery-tile-img')).forEach((tile, i) => {
-    const url = sb.storage.from('gallery').getPublicUrl(tiles[i].file_path).data.publicUrl;
-    tile.dataset.src = url;
-    tile.style.backgroundImage = `url("${url}")`;
+    const path = tiles[i].file_path;
+    const fullUrl = sb.storage.from('gallery').getPublicUrl(path).data.publicUrl;
+    const thumbUrl = sb.storage.from('gallery').getPublicUrl(path.replace(/\.[^.]+$/, '-thumb.jpg')).data.publicUrl;
+    tile.dataset.src = fullUrl;
+    // The grid shows a small tile, so prefer the lighter "-thumb" version if
+    // one was generated at upload time; older photos without one just fall
+    // back to the full-size image.
+    const probe = new Image();
+    probe.onload = () => {
+      tile.style.backgroundImage = `url("${thumbUrl}")`;
+    };
+    probe.onerror = () => {
+      tile.style.backgroundImage = `url("${fullUrl}")`;
+    };
+    probe.src = thumbUrl;
   });
 
   bindLightboxGroup('#galleryCarousel');
@@ -487,6 +499,42 @@ function showToast(msg) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
+function compressImage(file, maxDim = 1600, quality = 0.82) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          URL.revokeObjectURL(url);
+          resolve(blob || file);
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
 // ---- Guest snap (Supabase Storage + realtime) ----
 (function setupGuestSnap() {
   const fileInput = document.getElementById('snapFile');
@@ -512,16 +560,18 @@ function showToast(msg) {
       showToast('이름과 파일을 선택해주세요.');
       return;
     }
-    const ext = file.name.split('.').pop() || 'jpg';
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+    const thumbPath = path.replace(/\.jpg$/, '-thumb.jpg');
 
     submitBtn.disabled = true;
-    const { error: uploadError } = await sb.storage.from('guest-snap').upload(path, file);
+    const [compressed, thumb] = await Promise.all([compressImage(file, 1600, 0.82), compressImage(file, 480, 0.75)]);
+    const { error: uploadError } = await sb.storage.from('guest-snap').upload(path, compressed, { contentType: 'image/jpeg' });
     if (uploadError) {
       submitBtn.disabled = false;
       showToast('업로드에 실패했습니다. 잠시 후 다시 시도해주세요.');
       return;
     }
+    await sb.storage.from('guest-snap').upload(thumbPath, thumb, { contentType: 'image/jpeg' });
     const { error: insertError } = await sb.from('guest_snaps').insert({
       author,
       caption: caption || null,
@@ -550,17 +600,20 @@ function showToast(msg) {
     grid.innerHTML = guestSnaps
       .map((s) => {
         const url = sb.storage.from('guest-snap').getPublicUrl(s.file_path).data.publicUrl;
-        const media =
-          s.file_type === 'video'
-            ? `<video src="${url}" controls playsinline></video>`
-            : `<img src="${url}" loading="lazy" alt="" data-lightbox="1" />`;
+        let media;
+        if (s.file_type === 'video') {
+          media = `<video src="${url}" controls playsinline></video>`;
+        } else {
+          const thumbUrl = sb.storage.from('guest-snap').getPublicUrl(s.file_path.replace(/\.[^.]+$/, '-thumb.jpg')).data.publicUrl;
+          media = `<img src="${thumbUrl}" data-full="${url}" loading="lazy" alt="" data-lightbox="1" onerror="this.onerror=null;this.src='${url}'" />`;
+        }
         const caption = s.caption ? `<span class="snap-caption">${escapeHtml(s.caption)} — ${escapeHtml(s.author)}</span>` : `<span class="snap-caption">${escapeHtml(s.author)}</span>`;
         return `<div class="snap-item">${media}${caption}</div>`;
       })
       .join('');
     const snapImgs = Array.from(grid.querySelectorAll('img[data-lightbox]'));
     snapImgs.forEach((img, i) => {
-      img.addEventListener('click', () => openLightbox(snapImgs.map((el) => el.src), i));
+      img.addEventListener('click', () => openLightbox(snapImgs.map((el) => el.dataset.full || el.src), i));
     });
   }
 
