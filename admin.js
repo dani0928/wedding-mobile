@@ -1,11 +1,9 @@
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const BUCKET = 'gallery';
 
-// ---- Password gate ----
+// ---- Pattern gate ----
 const gate = document.getElementById('gate');
 const app = document.getElementById('app');
-const pwInput = document.getElementById('pwInput');
-const pwSubmit = document.getElementById('pwSubmit');
 const gateError = document.getElementById('gateError');
 
 function enterApp() {
@@ -42,19 +40,99 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
   });
 });
 
-function tryLogin() {
-  if (pwInput.value === ADMIN_PASSWORD) {
-    sessionStorage.setItem('admin_unlocked', '1');
-    gateError.textContent = '';
-    enterApp();
-  } else {
-    gateError.textContent = '비밀번호가 올바르지 않습니다.';
-  }
+const patternWrap = document.getElementById('patternWrap');
+const patternGrid = document.getElementById('patternGrid');
+const patternSvg = document.getElementById('patternSvg');
+const patternDots = Array.from(patternGrid.querySelectorAll('.pattern-dot'));
+const DOT_CENTERS = [
+  [40, 40], [120, 40], [200, 40],
+  [40, 120], [120, 120], [200, 120],
+  [40, 200], [120, 200], [200, 200],
+];
+let currentPattern = [];
+let patternDragging = false;
+
+function pointToSvg(clientX, clientY) {
+  const rect = patternWrap.getBoundingClientRect();
+  return {
+    x: ((clientX - rect.left) / rect.width) * 240,
+    y: ((clientY - rect.top) / rect.height) * 240,
+  };
 }
 
-pwSubmit.addEventListener('click', tryLogin);
-pwInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') tryLogin();
+function dotIndexAt(clientX, clientY) {
+  const el = document.elementFromPoint(clientX, clientY);
+  const dotEl = el && el.closest ? el.closest('.pattern-dot') : null;
+  return dotEl ? Number(dotEl.dataset.index) : null;
+}
+
+function redrawPatternLines(cursorPoint) {
+  let markup = '';
+  for (let i = 1; i < currentPattern.length; i++) {
+    const [x1, y1] = DOT_CENTERS[currentPattern[i - 1]];
+    const [x2, y2] = DOT_CENTERS[currentPattern[i]];
+    markup += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
+  }
+  if (cursorPoint && currentPattern.length > 0) {
+    const [x1, y1] = DOT_CENTERS[currentPattern[currentPattern.length - 1]];
+    markup += `<line x1="${x1}" y1="${y1}" x2="${cursorPoint.x}" y2="${cursorPoint.y}" />`;
+  }
+  patternSvg.innerHTML = markup;
+}
+
+function addPatternDot(index) {
+  if (currentPattern.includes(index)) return;
+  currentPattern.push(index);
+  patternDots[index].classList.add('active');
+}
+
+function resetPattern() {
+  currentPattern = [];
+  patternDots.forEach((d) => d.classList.remove('active'));
+  patternSvg.innerHTML = '';
+  patternWrap.classList.remove('error');
+  gateError.textContent = '';
+}
+
+function checkPattern() {
+  const ok = currentPattern.length === ADMIN_PATTERN.length && currentPattern.every((v, i) => v === ADMIN_PATTERN[i]);
+  if (ok) {
+    sessionStorage.setItem('admin_unlocked', '1');
+    enterApp();
+    return;
+  }
+  gateError.textContent = '패턴이 올바르지 않습니다.';
+  patternWrap.classList.add('error', 'shake');
+  setTimeout(() => {
+    patternWrap.classList.remove('shake');
+    resetPattern();
+  }, 400);
+}
+
+patternWrap.addEventListener('pointerdown', (e) => {
+  resetPattern();
+  patternDragging = true;
+  patternWrap.setPointerCapture(e.pointerId);
+  const idx = dotIndexAt(e.clientX, e.clientY);
+  if (idx !== null) addPatternDot(idx);
+  e.preventDefault();
+});
+patternWrap.addEventListener('pointermove', (e) => {
+  if (!patternDragging) return;
+  const idx = dotIndexAt(e.clientX, e.clientY);
+  if (idx !== null) addPatternDot(idx);
+  redrawPatternLines(pointToSvg(e.clientX, e.clientY));
+});
+patternWrap.addEventListener('pointerup', (e) => {
+  if (!patternDragging) return;
+  patternDragging = false;
+  patternWrap.releasePointerCapture(e.pointerId);
+  redrawPatternLines(null);
+  if (currentPattern.length > 0) checkPattern();
+});
+patternWrap.addEventListener('pointercancel', () => {
+  patternDragging = false;
+  resetPattern();
 });
 
 document.getElementById('lockBtn').addEventListener('click', () => {

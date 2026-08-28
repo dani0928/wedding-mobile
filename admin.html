@@ -30,20 +30,32 @@
   h1 { font-size: 1.15rem; margin: 0 0 4px; }
   .sub { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 20px; }
 
-  /* Password gate */
+  /* Pattern gate */
   #gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
-  #gate h1 { font-size: 1.2rem; margin-bottom: 18px; }
-  #gate input {
-    width: 100%; max-width: 260px; padding: 12px 14px; border: 1.5px solid var(--border-soft);
-    border-radius: 10px; font-size: 1rem; text-align: center; margin-bottom: 12px;
+  #gate h1 { font-size: 1.2rem; margin-bottom: 4px; }
+  .pattern-hint { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 24px; }
+  #gateError { color: var(--danger); font-size: 0.82rem; margin-top: 14px; min-height: 1.2em; }
+
+  .pattern-wrap { position: relative; width: 240px; height: 240px; touch-action: none; user-select: none; }
+  .pattern-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .pattern-svg line { stroke: var(--accent-deep); stroke-width: 4; stroke-linecap: round; }
+  .pattern-wrap.error .pattern-svg line { stroke: var(--danger); }
+  .pattern-grid {
+    position: relative; width: 100%; height: 100%; display: grid;
+    grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); place-items: center;
   }
-  #gate input:focus { outline: none; border-color: var(--accent); }
-  #gate button {
-    width: 100%; max-width: 260px; padding: 12px; border: none; border-radius: 10px;
-    background: var(--accent); color: #fff; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  .pattern-dot {
+    width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid var(--border-soft);
+    background: #fff; box-sizing: border-box; transition: background 0.15s, border-color 0.15s, transform 0.15s;
   }
-  #gate button:active { transform: scale(0.98); }
-  #gateError { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
+  .pattern-dot.active { background: var(--accent-deep); border-color: var(--accent-deep); transform: scale(1.2); }
+  .pattern-wrap.error .pattern-dot.active { background: var(--danger); border-color: var(--danger); }
+  .pattern-wrap.shake { animation: patternShake 0.4s; }
+  @keyframes patternShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
 
   #app { display: none; }
 
@@ -190,8 +202,21 @@
 
 <div id="gate">
   <h1>모바일청첩장 관리자 페이지</h1>
-  <input type="password" id="pwInput" placeholder="비밀번호" autocomplete="off" />
-  <button id="pwSubmit">입장</button>
+  <p class="pattern-hint">패턴을 그려주세요</p>
+  <div class="pattern-wrap" id="patternWrap">
+    <svg class="pattern-svg" id="patternSvg" viewBox="0 0 240 240"></svg>
+    <div class="pattern-grid" id="patternGrid">
+      <div class="pattern-dot" data-index="0"></div>
+      <div class="pattern-dot" data-index="1"></div>
+      <div class="pattern-dot" data-index="2"></div>
+      <div class="pattern-dot" data-index="3"></div>
+      <div class="pattern-dot" data-index="4"></div>
+      <div class="pattern-dot" data-index="5"></div>
+      <div class="pattern-dot" data-index="6"></div>
+      <div class="pattern-dot" data-index="7"></div>
+      <div class="pattern-dot" data-index="8"></div>
+    </div>
+  </div>
   <p id="gateError"></p>
 </div>
 
