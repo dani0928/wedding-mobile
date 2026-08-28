@@ -15,6 +15,7 @@ function enterApp() {
   loadRsvps();
   loadGuestbookAdmin();
   loadSnapsAdmin();
+  loadBiometricDevices();
 }
 
 function escapeHtml(str) {
@@ -135,14 +136,127 @@ patternWrap.addEventListener('pointercancel', () => {
   resetPattern();
 });
 
+// ---- Biometric (WebAuthn) ----
+function bufToBase64Url(buf) {
+  const bytes = new Uint8Array(buf);
+  let str = '';
+  for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlToBuf(b64url) {
+  const padded = b64url.replace(/-/g, '+').replace(/_/g, '/').padEnd(b64url.length + ((4 - (b64url.length % 4)) % 4), '=');
+  const str = atob(padded);
+  const bytes = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i);
+  return bytes.buffer;
+}
+
+const webauthnSupported = !!(window.PublicKeyCredential && navigator.credentials);
+const biometricBox = document.getElementById('biometricBox');
+const biometricList = document.getElementById('biometricList');
+
+async function platformAuthenticatorAvailable() {
+  if (!webauthnSupported) return false;
+  return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(() => false);
+}
+
+async function registerBiometric() {
+  if (!(await platformAuthenticatorAvailable())) {
+    showToast('이 기기에서는 Face ID/지문 등록을 사용할 수 없습니다.');
+    return;
+  }
+  const label = prompt('이 기기의 이름을 입력해주세요 (예: 진혁 아이폰)', '내 기기');
+  if (label === null) return;
+  try {
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: '모바일청첩장 관리자', id: location.hostname },
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'admin', displayName: label || '관리자' },
+        pubKeyCredParams: [
+          { type: 'public-key', alg: -7 },
+          { type: 'public-key', alg: -257 },
+        ],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000,
+        attestation: 'none',
+      },
+    });
+    const credentialId = bufToBase64Url(credential.rawId);
+    const { error } = await sb.from('admin_credentials').insert({ credential_id: credentialId, label: label || '등록된 기기' });
+    showToast(error ? '등록에 실패했습니다.' : '생체인증을 등록했습니다. 다음부터 자동으로 뜹니다.');
+    if (!error) await loadBiometricDevices();
+  } catch (e) {
+    showToast('등록이 취소되었거나 실패했습니다.');
+  }
+}
+
+async function tryBiometricLogin() {
+  if (!(await platformAuthenticatorAvailable())) return false;
+  const { data, error } = await sb.from('admin_credentials').select('credential_id');
+  if (error || !data || data.length === 0) return false;
+  try {
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        allowCredentials: data.map((r) => ({ type: 'public-key', id: base64UrlToBuf(r.credential_id) })),
+        userVerification: 'required',
+        timeout: 60000,
+      },
+    });
+    return !!assertion;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function loadBiometricDevices() {
+  if (!webauthnSupported) return;
+  biometricBox.hidden = false;
+  const { data, error } = await sb.from('admin_credentials').select('*').order('created_at', { ascending: false });
+  if (error) return;
+  biometricList.innerHTML = (data || [])
+    .map(
+      (c) => `
+      <div class="admin-list-card" data-id="${c.id}">
+        <div class="admin-list-main">
+          <p class="admin-list-title">${escapeHtml(c.label || '등록된 기기')}</p>
+          <p class="admin-list-date">${formatDate(c.created_at)}</p>
+        </div>
+        <button class="icon-btn danger" aria-label="삭제">✕</button>
+      </div>`
+    )
+    .join('');
+}
+
+document.getElementById('registerBiometricBtn').addEventListener('click', registerBiometric);
+biometricList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.icon-btn');
+  if (!btn) return;
+  const id = btn.closest('.admin-list-card').dataset.id;
+  if (!confirm('이 기기의 생체인증 등록을 삭제할까요?')) return;
+  btn.disabled = true;
+  const { error } = await sb.from('admin_credentials').delete().eq('id', id);
+  showToast(error ? '삭제에 실패했습니다.' : '삭제했습니다.');
+  if (!error) await loadBiometricDevices();
+});
+
 document.getElementById('lockBtn').addEventListener('click', () => {
   sessionStorage.removeItem('admin_unlocked');
   location.reload();
 });
 
-if (sessionStorage.getItem('admin_unlocked') === '1') {
-  enterApp();
-}
+(async function initGate() {
+  if (sessionStorage.getItem('admin_unlocked') === '1') {
+    enterApp();
+    return;
+  }
+  if (await tryBiometricLogin()) {
+    sessionStorage.setItem('admin_unlocked', '1');
+    enterApp();
+  }
+})();
 
 // ---- Toast ----
 const toast = document.getElementById('toast');
