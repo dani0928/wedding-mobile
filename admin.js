@@ -492,6 +492,39 @@ uploadBox.addEventListener('drop', (e) => {
   if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
 });
 
+// ---- Backfill thumbnails for photos uploaded before the -thumb approach ----
+const backfillThumbsBtn = document.getElementById('backfillThumbsBtn');
+const backfillThumbsStatus = document.getElementById('backfillThumbsStatus');
+
+backfillThumbsBtn.addEventListener('click', async () => {
+  const { data, error } = await sb.from('gallery_photos').select('*');
+  if (error || !data || data.length === 0) {
+    backfillThumbsStatus.textContent = '사진 목록을 불러오지 못했습니다.';
+    return;
+  }
+  backfillThumbsBtn.disabled = true;
+  let done = 0;
+  let failed = 0;
+  for (const p of data) {
+    backfillThumbsStatus.textContent = `처리 중... (${done + failed + 1}/${data.length})`;
+    try {
+      const res = await fetch(publicUrl(p.file_path));
+      if (!res.ok) throw new Error('fetch failed');
+      const original = await res.blob();
+      const thumb = await compressImage(original, 480, 0.75);
+      const thumbPath = p.file_path.replace(/\.[^.]+$/, '-thumb.jpg');
+      const { error: upErr } = await sb.storage.from(BUCKET).upload(thumbPath, thumb, { contentType: 'image/jpeg', upsert: true });
+      if (upErr) throw upErr;
+      done += 1;
+    } catch (e) {
+      failed += 1;
+    }
+  }
+  backfillThumbsBtn.disabled = false;
+  backfillThumbsStatus.textContent = failed > 0 ? `${done}장 완료, ${failed}장 실패` : `${done}장 썸네일을 새로 만들었습니다.`;
+  showToast('썸네일 생성이 끝났습니다.');
+});
+
 // ---- Site content (text) ----
 const CONTENT_KEYS = [
   'groom_name',

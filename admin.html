@@ -72,6 +72,12 @@
     width: 64px; height: 64px; border-radius: 10px; object-fit: cover;
     background: var(--ivory-deep); flex-shrink: 0; visibility: hidden;
   }
+  .backfill-thumbs-box {
+    border: 1px solid var(--border-soft); border-radius: 14px; padding: 16px;
+    margin-bottom: 20px; background: var(--ivory-deep);
+  }
+  .backfill-thumbs-box .upload-btn { margin-top: 10px; }
+
   .upload-box {
     border: 2px dashed var(--border-soft); border-radius: 14px; padding: 22px 16px;
     text-align: center; margin-bottom: 26px; background: var(--ivory-deep);
@@ -275,6 +281,12 @@
         <label class="upload-btn" for="fileInput">사진 선택</label>
         <input type="file" id="fileInput" accept="image/*" multiple />
         <p id="uploadStatus"></p>
+      </div>
+
+      <div class="backfill-thumbs-box">
+        <p class="share-thumb-hint">예전에 올린 사진은 그리드용 작은 썸네일이 없어서 아직 원본 크기로 나갑니다. 한 번 눌러서 만들어두면 트래픽이 줄어요. (원본 화질은 그대로 유지되고, 확대해서 볼 때는 항상 원본이 나옵니다)</p>
+        <button class="upload-btn" id="backfillThumbsBtn">기존 사진 썸네일 만들기</button>
+        <p id="backfillThumbsStatus" class="share-thumb-hint"></p>
       </div>
 
       <p class="section-label">현재 사진 (⭐ = 대표사진)</p>
